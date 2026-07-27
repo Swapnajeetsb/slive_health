@@ -9,12 +9,20 @@ const pridicationSchema  = new Schema({
         ammonia:Number,
         disease:String,
         percentage:Number,
+        createdAt: { type: Date, default: Date.now, },
         owner: {
          type: Schema.Types.ObjectId,
         ref: "user"
   },
+  
+    
+  
 
-});
+},{
+
+  timestamps:true
+}
+);
 
 
 module.exports = {pridicationSchema};

@@ -24,6 +24,7 @@ function Form() {
 
   const [predictedDisease, setPredictedDisease] = useState("");
   const [confidence, setConfidence] = useState("");
+  const [prediction, setPrediction] = useState(null);
 
   const handleChange = (e) => {
     setFormData({
@@ -41,7 +42,7 @@ function Form() {
 
     try {
       const res = await axios.post(
-        "https://slive-health.onrender.com/predict",
+        "http://localhost:3001/predict",
         formData,
         { withCredentials: true }
       );
@@ -49,12 +50,14 @@ function Form() {
       setResult(res.data.result);
       setPredictedDisease(res.data.predictedDisease);
       setConfidence(res.data.confidence);
+      setPrediction(res.data);
 
     } catch (error) {
       console.log(error);
     } finally {
       setLoading(false);
     }
+
   };
 
   const labels = result.map((item) => item.disease);
@@ -78,26 +81,6 @@ function Form() {
   const handleSuccess = (msg) =>
     toast.success(msg, { position: "bottom-left" });
 
-  const Logout = async () => {
-    try {
-      const { data } = await axios.get(
-        "https://slive-health.onrender.com/logout",
-        { withCredentials: true }
-      );
-
-      removeCookie("token", { path: "/" });
-
-      handleSuccess(data.message || "Logout Successful");
-
-      setTimeout(() => {
-        navigate("/login");
-      }, 1000);
-
-    } catch (error) {
-      console.log(error);
-      handleError("Logout Failed");
-    }
-  };
 
   return (
     <div className="form-page">
@@ -116,9 +99,7 @@ function Form() {
 
       <div className="prediction-card">
 
-        <button className="logout-btn" onClick={Logout}>
-          Logout
-        </button>
+       
 
         <h1 className="title">Disease Prediction</h1>
 
@@ -140,6 +121,49 @@ function Form() {
             <p className="confidence">Confidence: {confidence}%</p>
           </div>
         )}
+        {prediction && (
+  <div className="result-box">
+
+    <h2>Patient Health Status</h2>
+
+    <p>
+      <strong>Current Disease :</strong>{" "}
+      {prediction.predictedDisease}
+    </p>
+
+    <p>
+      <strong>Current Confidence :</strong>{" "}
+      {prediction.confidence}%
+    </p>
+
+    <p>
+      <strong>Previous Prediction :</strong>{" "}
+      {prediction.previousPrediction ?? "No Previous Data"}
+    </p>
+
+    <p>
+      <strong>Difference :</strong>{" "}
+      {prediction.difference}%
+    </p>
+
+    <h3>
+
+      {prediction.condition === "Improving" &&
+        "🟢 Improving"}
+
+      {prediction.condition === "Worsening" &&
+        "🔴 Worsening"}
+
+      {prediction.condition === "Stable" &&
+        "🟡 Stable"}
+
+      {prediction.condition === "First Checkup" &&
+        "🔵 First Checkup"}
+
+    </h3>
+
+  </div>
+)}
 
         {result.length > 0 && (
           <div className="graph-section">
@@ -149,6 +173,8 @@ function Form() {
 
       </div>
     </div>
+
+    
   );
 }
 

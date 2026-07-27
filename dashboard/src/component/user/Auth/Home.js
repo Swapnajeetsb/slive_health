@@ -6,6 +6,7 @@ const Home = () => {
   return (
     <>
       <Navbar />
+      
 
       <div className="container-fluid bg-light min-vh-100">
 
@@ -30,7 +31,7 @@ const Home = () => {
 
               <div className="d-flex gap-3">
                 <Link
-                  to="/login"
+                  to="/select-role"
                   className="btn btn-primary btn-lg"
                 >
                   Get Started

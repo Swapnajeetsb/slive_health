@@ -34,7 +34,7 @@ function Signup() {
 
     try {
       const { data } = await axios.post(
-        "https://slive-health.onrender.com/signup",
+        "http://localhost:3001/signup",
         { ...inputValue },
         { withCredentials: true }
       );
@@ -45,7 +45,7 @@ function Signup() {
         handleSuccess(message);
 
         setTimeout(() => {
-          navigate("/dashboard");
+          navigate("/Patient");
         }, 1000);
       } else {
         handleError(message);

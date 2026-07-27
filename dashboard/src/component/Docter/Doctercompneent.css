@@ -1,0 +1,113 @@
+body {
+  background: #f5f7fb;
+  margin: 0;
+}
+.dashboard {
+  display: flex;
+  min-height: 100vh;
+}
+.sidebar {
+  width: 250px;
+  background: linear-gradient(180deg, #003d3d, #005f5f);
+  color: white;
+  padding: 20px;
+}
+.logo {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 30px;
+}
+.panel-title {
+  font-size: 12px;
+  opacity: 0.7;
+  margin-bottom: 15px;
+}
+.menu {
+  list-style: none;
+  padding: 0;
+}
+.menu li {
+  padding: 12px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.menu li.active,
+.menu li:hover {
+  background: #19c37d;
+}
+.content {
+  flex: 1;
+  padding: 25px;
+}
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+.doctor-info {
+  text-align: right;
+}
+.doctor-name {
+  font-weight: 600;
+}
+.stats-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-bottom: 20px;
+}
+.stats-value {
+  font-size: 32px;
+  font-weight: bold;
+}
+.box {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  height: 100%;
+}
+.status-confirmed {
+  background: #d4edda;
+  color: #198754;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+.status-pending {
+  background: #fff3cd;
+  color: #856404;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+.quick-btn {
+  width: 100%;
+  margin-bottom: 10px;
+}
+@media (max-width: 768px) {
+  .dashboard {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: 100%;
+  }
+}
+.dashboard{
+    display:flex;
+    min-height:100vh;
+    background:#f5f7fb;
+}
+
+.sidebar{
+    width:260px;
+    flex-shrink:0;
+}
+
+.content{
+    flex:1;
+    padding:30px;
+}

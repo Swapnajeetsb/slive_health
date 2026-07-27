@@ -1,0 +1,110 @@
+
+        body{
+          background:#f5f7fb;
+        }
+
+        .app-container{
+          display:flex;
+          min-height:100vh;
+        }
+
+        .sidebar{
+          width:250px;
+          background:linear-gradient(180deg,#003b9a,#0056d6);
+          color:white;
+          padding:20px;
+        }
+
+        .logo{
+          font-size:24px;
+          font-weight:bold;
+          margin-bottom:30px;
+        }
+
+        .panel-title{
+          font-size:12px;
+          color:#d5e1ff;
+          margin-bottom:15px;
+        }
+
+        .menu{
+          list-style:none;
+          padding:0;
+        }
+
+        .menu li{
+          padding:12px;
+          margin-bottom:8px;
+          border-radius:8px;
+          cursor:pointer;
+          transition:.3s;
+        }
+
+        .menu li:hover,
+        .menu li.active{
+          background:#1677ff;
+        }
+
+        .content{
+          flex:1;
+          padding:30px;
+        }
+
+        .appointment-card{
+          border:none;
+          border-radius:12px;
+          padding:25px;
+          background:#fff;
+          box-shadow:0 2px 10px rgba(0,0,0,.08);
+        }
+
+        .note-box{
+          background:#eef5ff;
+          border:1px solid #d8e5ff;
+          border-radius:8px;
+          padding:15px;
+          color:#0d6efd;
+        }
+
+        .calendar-box{
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          height:100%;
+          color:#0d6efd;
+          font-size:120px;
+        }
+
+        @media(max-width:768px){
+          .app-container{
+            flex-direction:column;
+          }
+
+          .sidebar{
+            width:100%;
+          }
+
+          .calendar-box{
+            display:none;
+          }
+
+
+          
+        }
+        .sidebar{
+    height:100vh;
+    overflow-y:auto;
+    position:fixed;
+    width:250px;
+    left:0;
+    top:0;
+    background:#fff;
+    box-shadow:0 0 10px rgba(0,0,0,.1);
+    z-index:1000;
+}
+
+.main-content{
+    margin-left:250px;
+    padding:25px;
+}
+      

@@ -27,7 +27,7 @@ function Navbar() {
         <div className="d-flex gap-2">
 
           <a
-            href="/login"
+            href="/select-role"
             className="btn btn-outline-primary"
           >
             Login

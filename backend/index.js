@@ -3,6 +3,8 @@ const express = require("express");
 const  mongoose = require("mongoose");
 const {pridicationModel} = require("./Model/pridication");
 const {userModel} = require("./Model/userModel");
+const {docterModel} = require("./Model/docterModel");
+const {AppointmentModel} = require("./Model/AppointmentModel");
 const bodyparser = require("body-parser");
 const { createSecretToken } = require("./util/SecretToken");
 const jwt = require("jsonwebtoken");
@@ -10,6 +12,9 @@ const bcrypt = require("bcryptjs");
 const cookieParser = require("cookie-parser");
 const{ CookiesProvider }= require( "react-cookie");
 const cors = require("cors");
+const DocterRouter = require("./Router/DocterRouter");
+const AdminRouter = require("./Router/AdminRoute")
+const UserRoute = require("./Router/UserRoute");
 const { PythonShell } =
 require("python-shell");
 
@@ -18,7 +23,8 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: "https://slive-health-1.onrender.com", // frontend URL
+    origin:"http://localhost:3000", 
+     // frontend URL
     credentials: true,
   })
 );
@@ -34,7 +40,9 @@ try{
 
 app.post("/predict", async (req, res) => {
   try {
-    // Get token from cookie
+      console.log("Cookies:", req.cookies);
+    console.log("Token:", req.cookies.token);
+
     const token = req.cookies.token;
 
     if (!token) {
@@ -44,7 +52,6 @@ app.post("/predict", async (req, res) => {
       });
     }
 
-    // Verify JWT
     const decoded = jwt.verify(
       token,
       process.env.TOKEN_KEY
@@ -52,12 +59,8 @@ app.post("/predict", async (req, res) => {
 
     const userId = decoded.id;
 
-    console.log(
-      "Logged User ID:",
-      userId
-    );
+    console.log("Logged User ID:", userId);
 
-    // Get frontend data
     const {
       conductivity,
       oxygen,
@@ -65,7 +68,15 @@ app.post("/predict", async (req, res) => {
       ammonia,
     } = req.body;
 
-    // Python arguments
+    // ==========================
+    // Get Previous Prediction
+    // ==========================
+
+    const previousPrediction =
+      await pridicationModel
+        .findOne({ owner: userId })
+        .sort({ createdAt: -1 });
+
     const options = {
       args: [
         conductivity,
@@ -77,27 +88,18 @@ app.post("/predict", async (req, res) => {
 
     const path = require("path");
 
-    // Run Python file
-    const result =
-      await PythonShell.run(
-        path.join(
-          __dirname,
-          "python",
-          "predict.py"
-        ),
-        options
-      );
+    const result = await PythonShell.run(
+      path.join(
+        __dirname,
+        "python",
+        "predict.py"
+      ),
+      options
+    );
 
-    // Parse Python JSON output
     const predictionData =
       JSON.parse(result[0]);
 
-    console.log(
-      "Prediction Data:",
-      predictionData
-    );
-
-    // Find highest percentage disease
     const topDisease =
       predictionData.reduce(
         (max, current) =>
@@ -107,210 +109,226 @@ app.post("/predict", async (req, res) => {
             : max
       );
 
-    console.log(
-      "Top Disease:",
-      topDisease
-    );
+    // ==========================
+    // Compare Prediction
+    // ==========================
 
-    // Save prediction
-    const newPrediction =
-      await pridicationModel.create({
-        owner: userId,
-        conductivity,
-        oxygen,
-        methane,
-        ammonia,
-        disease:
-          topDisease.disease,
-        percentage:
-          topDisease.percentage,
-      });
+    let condition = "First Checkup";
+    let difference = 0;
 
-    console.log(
-      "Prediction Saved:",
-      newPrediction
-    );
+    if (previousPrediction) {
 
-    // Find user
-    const user =
-      await userModel.findById(
-        userId
-      );
+      difference = Math.abs(
+        topDisease.percentage -
+        previousPrediction.percentage
+      ).toFixed(2);
 
-    if (!user) {
-      return res.status(404)
-        .json({
-          success: false,
-          message:
-            "User not found",
-        });
+      if (
+        topDisease.percentage <
+        previousPrediction.percentage
+      ) {
+
+        condition = "Improving";
+
+      } else if (
+        topDisease.percentage >
+        previousPrediction.percentage
+      ) {
+
+        condition = "Worsening";
+
+      } else {
+
+        condition = "Stable";
+      }
     }
 
-    // Add prediction to user
-    user.checkup.push(
-      newPrediction._id
-    );
+    // ==========================
+    // Save Prediction
+    // ==========================
+
+    const newPrediction =
+      await pridicationModel.create({
+
+        owner: userId,
+
+        conductivity,
+
+        oxygen,
+
+        methane,
+
+        ammonia,
+
+        disease:
+          topDisease.disease,
+
+        percentage:
+          topDisease.percentage,
+
+      });
+
+    const user =
+      await userModel.findById(userId);
+
+    if (!user) {
+
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+
+    }
+
+    user.checkup.push(newPrediction._id);
 
     await user.save();
 
-    console.log(
-      "Prediction added to user checkup"
-    );
+    // ==========================
+    // Send Response
+    // ==========================
 
-    // Send response to frontend
     res.status(200).json({
+
       success: true,
+
       result: predictionData,
+
       predictedDisease:
         topDisease.disease,
+
       confidence:
         topDisease.percentage,
+
+      previousPrediction:
+        previousPrediction
+          ? previousPrediction.percentage
+          : null,
+
+      condition,
+
+      difference,
+
+    });
+
+  } catch (error) {
+
+    console.log(error);
+
+    res.status(500).json({
+
+      success: false,
+
+      message: "Server Error",
+
+    });
+
+
+  }
+
+});
+
+    
+
+// docter Rlute
+
+app.post("/newDocter", async (req, res) => {
+  try {
+    const newdocter = new docterModel({
+      name: req.body.name,
+      email: req.body.email,
+      phone: req.body.phone,
+      specialization: req.body.specialization,
+      experience: req.body.experience,
+      qualification: req.body.qualification,
+      hospital: req.body.hospital,
+      image: req.body.image,
+      username: req.body.username,
+      password: req.body.password,
+    });
+
+    const addedDocter = await newdocter.save();
+
+    console.log(addedDocter);
+
+    res.status(201).json({
+      message: "Doctor Added Successfully",
+      doctor: addedDocter,
     });
 
   } catch (error) {
     console.log(error);
 
     res.status(500).json({
-      success: false,
+      message: "Error adding doctor",
+    });
+  }
+});
+
+app.post(
+"/BookAppointment",
+async(req,res)=>{
+
+try{
+
+ const {
+  patientName,
+  email,
+  mobile,
+  doctorId,
+  doctor,
+  date,
+  time,
+  symptoms
+ } = req.body;
+
+ const exists =
+ await AppointmentModel.findOne({
+   doctorId,
+   date,
+   time
+ });
+
+ if(exists){
+
+   return res.status(400)
+   .json({
       message:
-        "Server Error",
-    });
-  }
-});
+      "Slot already booked"
+   });
 
+ }
 
-    app.post("/signup", async (req, res) => {
-  try {
-    const { email, password, username } = req.body;
+ const appointment =
+ await AppointmentModel.create({
 
-    // Check user already exists
-    const existingUser = await userModel.findOne({
-      email,
-    });
+   patientName,
+   email,
+   mobile,
+   doctorId,
+   doctor,
+   date,
+   time,
+   symptoms
 
-    if (existingUser) {
-      return res.status(400).json({
-        success: false,
-        message: "User already exists",
-      });
-    }
+ });
 
-    // Create new user
-    const user = await userModel.create({
-      email,
-      password,
-      username,
-    });
+ res.status(201)
+ .json(appointment);
 
-    // Create token
-    const token = createSecretToken(user._id);
+}catch(err){
 
-    // Save token in cookie
-   res.cookie("token", token, {
-  httpOnly: true,
-  secure: true,
-  sameSite: "none",
-});
+ res.status(500).json(err);
 
-    // Response
-    return res.status(201).json({
-      success: true,
-      message: "User signed up successfully",
-      user,
-    });
-
-  } catch (error) {
-    console.log(error);
-
-    return res.status(500).json({
-      success: false,
-      message: "Server Error",
-    });
-  }
-});
-
-app.post("/login", async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    console.log(email, password);
-
-    const user = await userModel.findOne({ email });
-
-    console.log(user);
-
-    if (!user) {
-      return res.json({
-        message: "Incorrect password or email"
-      });
-    }
-
-    const auth = await bcrypt.compare(
-      password,
-      user.password
-    );
-
-    console.log(auth);
-
-    if (!auth) {
-      return res.json({
-        message: "Incorrect password or email"
-      });
-    }
-
-    const token = createSecretToken(user._id);
-
-   res.cookie("token", token, {
-  httpOnly: true,
-  secure: true,
-  sameSite: "none",
-});
-
-    return res.status(200).json({
-      message: "User logged in successfully",
-      success: true,
-    });
-
-  } catch (error) {
-    console.log(error);
-  }
-});
-
-app.get("/logout", (req, res) => {
-
-  res.clearCookie("token", {
-    httpOnly: true,
-    secure: false,
-    sameSite: "lax"
-  });
-
-  res.status(200).json({
-    message: "Logout successful"
-  });
+}
 
 });
+app.use("/", UserRoute);
+//  Docter login
+app.use("/",DocterRouter);
 
-app.get("/verify", (req, res) => {
-  const token = req.cookies.token;
+app.use("/",AdminRouter);
 
-  if (!token) {
-    return res.status(401).json({
-      success: false,
-    });
-  }
-
-  try {
-    jwt.verify(token, process.env.TOKEN_KEY);
-
-    return res.status(200).json({
-      success: true,
-    });
-  } catch (err) {
-    return res.status(401).json({
-      success: false,
-    });
-  }
-});
 
 
 app.listen(3001,
