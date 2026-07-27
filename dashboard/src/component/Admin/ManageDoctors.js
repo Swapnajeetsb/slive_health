@@ -23,7 +23,7 @@ function ManageDoctors() {
 
         const { data } =
           await axios.get(
-            "http://localhost:3001/admin/doctors"
+            "https://slive-health.onrender.com/admin/doctors"
           );
 
         console.log(
@@ -46,7 +46,7 @@ function ManageDoctors() {
       try {
 
         await axios.delete(
-          `http://localhost:3001/admin/doctor/${id}`
+          `https://slive-health.onrender.com/admin/doctor/${id}`
         );
 
         getDoctors();

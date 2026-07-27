@@ -17,7 +17,7 @@ export default function DoctorDashboard() {
       setDoctor(doctorData);
 
       axios
-        .get(`http://localhost:3001/doctorAppointments/Dr.${doctorData.name}`)
+        .get(`https://slive-health.onrender.com/doctorAppointments/Dr.${doctorData.name}`)
         .then((res) => {
           console.log("Appointments:", res.data);
           setAppointments(res.data);
@@ -30,14 +30,14 @@ export default function DoctorDashboard() {
 
   // Total Patients
   useEffect(() => {
-    axios.get("http://localhost:3001/allpetionts").then((res) => {
+    axios.get("https://slive-health.onrender.com/allpetionts").then((res) => {
       setAllpetionts(res.data);
     });
   }, []);
 
   // Total Predictions
   useEffect(() => {
-    axios.get("http://localhost:3001/allpridictions").then((res) => {
+    axios.get("https://slive-health.onrender.com/allpridictions").then((res) => {
       setAllpridiction(res.data);
     });
   }, []);
@@ -46,7 +46,7 @@ export default function DoctorDashboard() {
   const updateStatus = async (id, status) => {
     try {
       const res = await axios.put(
-        `http://localhost:3001/appointment/status/${id}`,
+        `https://slive-health.onrender.com/appointment/status/${id}`,
         { status },
       );
 

@@ -23,7 +23,7 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin:"http://localhost:3000", 
+    origin:"https://slive-health-1.onrender.com", 
      // frontend URL
     credentials: true,
   })

@@ -23,7 +23,7 @@ function DoctorLogin() {
 
     try {
       const response = await axios.post(
-        "http://localhost:3001/Doctor/login",
+        "https://slive-health.onrender.com/Doctor/login",
         doctorData
       );
 

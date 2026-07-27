@@ -23,7 +23,7 @@ function ManageAppointments() {
 
         const { data } =
           await axios.get(
-            "http://localhost:3001/admin/appointments"
+            "https://slive-health.onrender.com/admin/appointments"
           );
 
         console.log(
@@ -50,7 +50,7 @@ function ManageAppointments() {
       try {
 
         await axios.put(
-          `http://localhost:3001/admin/appointment/${id}`,
+          `https://slive-health.onrender.com/admin/appointment/${id}`,
           { status }
         );
 
@@ -68,7 +68,7 @@ function ManageAppointments() {
       try {
 
         await axios.delete(
-          `http://localhost:3001/admin/appointment/${id}`
+          `https://slive-health.onrender.com/admin/appointment/${id}`
         );
 
         getAppointments();

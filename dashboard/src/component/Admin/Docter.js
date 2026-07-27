@@ -20,7 +20,7 @@ function DoctorForm() {
 
     try {
       const res = await axios.post(
-        "http://localhost:3001/newDocter",
+        "https://slive-health.onrender.com/newDocter",
         doctor
       );
 

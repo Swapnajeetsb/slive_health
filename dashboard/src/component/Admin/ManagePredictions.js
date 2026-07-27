@@ -25,7 +25,7 @@ function ManagePredictions() {
 
         const { data } =
           await axios.get(
-            "http://localhost:3001/getPredictions"
+            "https://slive-health.onrender.com/getPredictions"
           );
 
         setPredictions(

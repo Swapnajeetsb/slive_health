@@ -19,7 +19,7 @@ function ManageUsers() {
       try {
         const { data } =
           await axios.get(
-            "http://localhost:3001/admin/users"
+            "https://slive-health.onrender.com/admin/users"
           );
 
         console.log(
@@ -39,7 +39,7 @@ function ManageUsers() {
     async (id) => {
       try {
         await axios.delete(
-          `http://localhost:3001/admin/user/${id}`
+          `https://slive-health.onrender.com/admin/user/${id}`
         );
 
         getUsers();

@@ -33,7 +33,7 @@ function AdminDashboard() {
 
         const { data } =
           await axios.get(
-            "http://localhost:3001/admin/dashboard"
+            "https://slive-health.onrender.com/admin/dashboard"
           );
 
         console.log(data);
