@@ -24,7 +24,7 @@ export default function BookAppointment() {
   const fetchDoctors = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:3001/allDoctors"
+        "https://slive-health.onrender.com/allDoctors"
       );
 
       setDoctors(res.data);
@@ -45,7 +45,7 @@ export default function BookAppointment() {
 
     try {
       const res = await axios.post(
-        "http://localhost:3001/BookAppointment",
+        "https://slive-health.onrender.com/BookAppointment",
         formData
       );
 

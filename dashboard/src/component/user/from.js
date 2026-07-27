@@ -42,7 +42,7 @@ function Form() {
 
     try {
       const res = await axios.post(
-        "http://localhost:3001/predict",
+        "https://slive-health.onrender.com/predict",
         formData,
         { withCredentials: true }
       );

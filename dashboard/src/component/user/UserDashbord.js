@@ -52,7 +52,7 @@ function PatientDashboard() {
 
           const { data } =
             await axios.get(
-              `http://localhost:3001/getUser/${savedUser._id}`
+              `https://slive-health.onrender.com/getUser/${savedUser._id}`
             );
 
           console.log(
